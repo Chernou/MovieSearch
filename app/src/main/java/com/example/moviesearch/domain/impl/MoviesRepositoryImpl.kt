@@ -10,7 +10,6 @@ import util.Resource
 
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
-    // 1
     private val localStorage: LocalStorage,
 ) : MoviesRepository {
 

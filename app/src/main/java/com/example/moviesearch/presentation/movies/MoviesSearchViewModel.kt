@@ -37,10 +37,8 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
     private val handler = Handler(Looper.getMainLooper())
 
     private val stateLiveData = MutableLiveData<MoviesState>()
-
     private val showToast = SingleLiveEvent<String>()
     fun observeShowToast(): LiveData<String> = showToast
-
     private val mediatorStateLiveData = MediatorLiveData<MoviesState>().also { liveData ->
         // 1
         liveData.addSource(stateLiveData) { movieState ->
@@ -62,12 +60,9 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
         if (latestSearchText == changedText) {
             return
         }
-
         this.latestSearchText = changedText
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
         val searchRunnable = Runnable { searchRequest(changedText) }
-
         val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
         handler.postAtTime(
             searchRunnable,
@@ -139,7 +134,6 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
         val currentState = stateLiveData.value
         if (currentState is MoviesState.Content) {
             val movieIndex = currentState.movies.indexOfFirst { it.id == movieId }
-
             if (movieIndex != -1) {
                 stateLiveData.value = MoviesState.Content(
                     currentState.movies.toMutableList().also {

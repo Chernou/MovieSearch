@@ -10,7 +10,6 @@ import com.bumptech.glide.Glide
 import com.example.moviesearch.R
 import com.example.moviesearch.domain.models.Movie
 
-
 class MovieViewHolder(
     parent: ViewGroup,
     private val clickListener: MoviesAdapter.MovieClickListener
@@ -18,25 +17,19 @@ class MovieViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.list_item_movie, parent, false)
 ) {
 
-    var cover: ImageView = itemView.findViewById(R.id.cover)
-    var title: TextView = itemView.findViewById(R.id.title)
-    var description: TextView = itemView.findViewById(R.id.description)
-    // 1
-    var inFavoriteToggle: ImageView = itemView.findViewById(R.id.favorite)
+    private var cover: ImageView = itemView.findViewById(R.id.cover)
+    private var title: TextView = itemView.findViewById(R.id.title)
+    private var description: TextView = itemView.findViewById(R.id.description)
+    private var inFavoriteToggle: ImageView = itemView.findViewById(R.id.favorite)
 
     fun bind(movie: Movie) {
         Glide.with(itemView)
             .load(movie.image)
             .into(cover)
-
         title.text = movie.title
         description.text = movie.description
-
-        // 2
         inFavoriteToggle.setImageDrawable(getFavoriteToggleDrawable(movie.inFavorite))
-
         itemView.setOnClickListener { clickListener.onMovieClick(movie) }
-        // 3
         inFavoriteToggle.setOnClickListener { clickListener.onFavoriteToggleClick(movie) }
     }
 

@@ -12,22 +12,15 @@ import com.example.moviesearch.presentation.poster.PosterView
 class PosterActivity : Activity(), PosterView {
 
     private lateinit var presenter: PosterPresenter
-
     private lateinit var poster: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         val url = intent.extras?.getString("poster", "")
         presenter = Creator.providePosterPresenter(this, url!!)
         setContentView(R.layout.activity_poster)
-
         poster = findViewById(R.id.poster)
-
         presenter.onCreate()
-
-
     }
 
     override fun setPosterImage(url: String) {

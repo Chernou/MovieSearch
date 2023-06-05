@@ -28,7 +28,6 @@ class MoviesActivity : ComponentActivity() {
     }
 
     private lateinit var viewModel: MoviesSearchViewModel
-
     private lateinit var queryInput: EditText
     private lateinit var placeholderMessage: TextView
     private lateinit var moviesList: RecyclerView
@@ -74,8 +73,6 @@ class MoviesActivity : ComponentActivity() {
         moviesList = findViewById(R.id.locations)
         progressBar = findViewById(R.id.progressBar)
 
-
-
         moviesList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         moviesList.adapter = adapter
 
@@ -92,7 +89,7 @@ class MoviesActivity : ComponentActivity() {
             override fun afterTextChanged(s: Editable?) {
             }
         }
-        textWatcher?.let { queryInput.addTextChangedListener(it) }
+        textWatcher.let { queryInput.addTextChangedListener(it) }
     }
 
     private fun showToast(additionalMessage: String) {
@@ -106,7 +103,6 @@ class MoviesActivity : ComponentActivity() {
             is MoviesState.Content -> showContent(state.movies)
             is MoviesState.Error -> showError(state.errorMessage)
             is MoviesState.Empty -> showEmpty(state.message)
-
         }
     }
 

@@ -7,10 +7,8 @@ import android.util.Log
 import com.example.moviesearch.data.NetworkClient
 import com.example.moviesearch.data.dto.MoviesSearchRequest
 import com.example.moviesearch.data.dto.Response
-import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 class RetrofitNetworkClient(private val context: Context) : NetworkClient {
 
@@ -21,25 +19,22 @@ class RetrofitNetworkClient(private val context: Context) : NetworkClient {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-
     private val imdbService = retrofit.create(IMDbApiService::class.java)
 
     override fun doRequest(dto: Any): Response {
 
         if (!isConnected()) {
-            Log.d("!@#", "Not connected")
+            Log.d("!@#", "Not connected") //todo delete
             return Response().apply { resultCode = -1 }
 
         }
         return if (dto is MoviesSearchRequest) {
             val resp = imdbService.searchMovies(dto.expression).execute()
-
             val body = resp.body() ?: Response()
-            Log.d("!@#", resp.code().toString())
-
+            Log.d("!@#", resp.code().toString()) //todo delete
             body.apply { resultCode = resp.code() }
         } else {
-            Log.d("!@#", "Successful")
+            Log.d("!@#", "Successful") //todo delete
             Response().apply { resultCode = 400 }
         }
     }
@@ -57,5 +52,4 @@ class RetrofitNetworkClient(private val context: Context) : NetworkClient {
         }
         return false
     }
-
 }
