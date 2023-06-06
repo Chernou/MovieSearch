@@ -1,49 +1,36 @@
 package com.example.moviesearch.presentation.movies
 
-import SingleLiveEvent
-import android.app.Application
+import com.example.moviesearch.presentation.SingleLiveEvent
 import android.os.Handler
-import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.moviesearch.R
-import util.Creator
 import com.example.moviesearch.domain.MoviesState
 import com.example.moviesearch.domain.api.MoviesInteractor
 import com.example.moviesearch.domain.models.Movie
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import util.ResourceProvider
 
-class MoviesSearchViewModel (application: Application): AndroidViewModel(application){
+class MoviesSearchViewModel : ViewModel(), KoinComponent {
 
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                MoviesSearchViewModel(this[APPLICATION_KEY] as Application)
-            }
-        }
-    }
-
-    private val moviesInteractor = Creator.provideMoviesInteractor(getApplication<Application>())
-    private val handler = Handler(Looper.getMainLooper())
+    private val moviesInteractor: MoviesInteractor by inject()
+    private val handler: Handler by inject()
+    private val resourceProvider: ResourceProvider by inject()
 
     private val stateLiveData = MutableLiveData<MoviesState>()
     private val showToast = SingleLiveEvent<String>()
-    fun observeShowToast(): LiveData<String> = showToast
+
     private val mediatorStateLiveData = MediatorLiveData<MoviesState>().also { liveData ->
-        // 1
         liveData.addSource(stateLiveData) { movieState ->
             liveData.value = when (movieState) {
-                // 2
                 is MoviesState.Content -> MoviesState.Content(movieState.movies.sortedByDescending { it.inFavorite })
                 is MoviesState.Empty -> movieState
                 is MoviesState.Error -> movieState
@@ -53,6 +40,12 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
     }
 
     private var latestSearchText: String? = null
+
+    override fun onCleared() {
+        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+    }
+
+    fun observeShowToast(): LiveData<String> = showToast
 
     fun observeState(): LiveData<MoviesState> = mediatorStateLiveData
 
@@ -71,8 +64,10 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
         )
     }
 
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+    fun toggleFavorite(movie: Movie) {
+        if (movie.inFavorite) moviesInteractor.removeMovieFromFavorites(movie)
+        else moviesInteractor.addMovieToFavorites(movie)
+        updateMovieContent(movie.id, movie.copy(inFavorite = !movie.inFavorite))
     }
 
     private fun searchRequest(newSearchText: String) {
@@ -90,7 +85,7 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
                         errorMessage != null -> {
                             renderState(
                                 MoviesState.Error(
-                                    errorMessage = getApplication<Application>().getString(R.string.something_went_wrong),
+                                    errorMessage = resourceProvider.getString(R.string.something_went_wrong),
                                 )
                             )
                             showToast.postValue(errorMessage)
@@ -99,7 +94,7 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
                         movies.isEmpty() -> {
                             renderState(
                                 MoviesState.Empty(
-                                    message = getApplication<Application>().getString(R.string.nothing_found),
+                                    message = resourceProvider.getString(R.string.nothing_found),
                                 )
                             )
                         }
@@ -110,6 +105,7 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
                                     movies = movies,
                                 )
                             )
+                            //todo delete
                             Log.d("!@#", movies[0].title)
                             Log.d("!@#", movies[1].title)
                             Log.d("!@#", movies[2].title)
@@ -124,12 +120,6 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
         stateLiveData.postValue(state)
     }
 
-    fun toggleFavorite(movie: Movie) {
-        if (movie.inFavorite) moviesInteractor.removeMovieFromFavorites(movie)
-        else moviesInteractor.addMovieToFavorites(movie)
-        updateMovieContent(movie.id, movie.copy(inFavorite = !movie.inFavorite))
-    }
-
     private fun updateMovieContent(movieId: String, newMovie: Movie) {
         val currentState = stateLiveData.value
         if (currentState is MoviesState.Content) {
@@ -140,6 +130,17 @@ class MoviesSearchViewModel (application: Application): AndroidViewModel(applica
                         it[movieIndex] = newMovie
                     }
                 )
+            }
+        }
+    }
+
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private val SEARCH_REQUEST_TOKEN = Any()
+
+        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                MoviesSearchViewModel()
             }
         }
     }

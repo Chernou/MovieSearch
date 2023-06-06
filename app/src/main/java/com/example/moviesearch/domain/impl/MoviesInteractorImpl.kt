@@ -3,12 +3,15 @@ package com.example.moviesearch.domain.impl
 import com.example.moviesearch.domain.api.MoviesInteractor
 import com.example.moviesearch.domain.api.MoviesRepository
 import com.example.moviesearch.domain.models.Movie
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import util.Resource
-import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
 
-class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInteractor {
+class MoviesInteractorImpl : MoviesInteractor, KoinComponent {
 
-    private val executor = Executors.newCachedThreadPool()
+    private val repository: MoviesRepository by inject()
+    private val executor: ExecutorService by inject()
 
     override fun searchMovies(expression: String, consumer: MoviesInteractor.MoviesConsumer) {
         executor.execute {
@@ -26,6 +29,4 @@ class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInt
     override fun removeMovieFromFavorites(movie: Movie) {
         repository.removeMovieFromFavorites(movie)
     }
-
-
 }

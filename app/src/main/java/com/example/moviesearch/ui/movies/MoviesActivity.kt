@@ -3,7 +3,6 @@ package com.example.moviesearch.ui.movies
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -11,8 +10,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearch.R
@@ -20,14 +18,11 @@ import com.example.moviesearch.domain.MoviesState
 import com.example.moviesearch.domain.models.Movie
 import com.example.moviesearch.presentation.movies.MoviesSearchViewModel
 import com.example.moviesearch.ui.poster.PosterActivity
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MoviesActivity : ComponentActivity() {
+class MoviesActivity : AppCompatActivity() {
 
-    companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
-
-    private lateinit var viewModel: MoviesSearchViewModel
     private lateinit var queryInput: EditText
     private lateinit var placeholderMessage: TextView
     private lateinit var moviesList: RecyclerView
@@ -48,17 +43,12 @@ class MoviesActivity : ComponentActivity() {
     })
 
     private var isClickAllowed = true
-
-    private val handler = Handler(Looper.getMainLooper())
+    private val handler: Handler by inject()
+    private val viewModel: MoviesSearchViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
-
-        viewModel = ViewModelProvider(
-            this,
-            MoviesSearchViewModel.getViewModelFactory()
-        )[MoviesSearchViewModel::class.java]
 
         viewModel.observeState().observe(this) {
             render(it)
@@ -143,4 +133,9 @@ class MoviesActivity : ComponentActivity() {
         }
         return current
     }
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+    }
+
 } 

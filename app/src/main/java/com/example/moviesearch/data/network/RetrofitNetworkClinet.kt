@@ -1,32 +1,22 @@
 package com.example.moviesearch.data.network
 
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import com.example.moviesearch.data.NetworkClient
 import com.example.moviesearch.data.dto.MoviesSearchRequest
 import com.example.moviesearch.data.dto.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class RetrofitNetworkClient(private val context: Context) : NetworkClient {
+class RetrofitNetworkClient : NetworkClient, KoinComponent {
 
-    private val imdbBaseUrl = "https://imdb-api.com"
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(imdbBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val imdbService = retrofit.create(IMDbApiService::class.java)
+    private val imdbService:ImdbApiService by inject()
 
     override fun doRequest(dto: Any): Response {
-
         if (!isConnected()) {
             Log.d("!@#", "Not connected") //todo delete
             return Response().apply { resultCode = -1 }
-
         }
         return if (dto is MoviesSearchRequest) {
             val resp = imdbService.searchMovies(dto.expression).execute()
@@ -40,8 +30,7 @@ class RetrofitNetworkClient(private val context: Context) : NetworkClient {
     }
 
     private fun isConnected(): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager: ConnectivityManager = getKoin().get()
         val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (capabilities != null) {
             when {
@@ -51,5 +40,9 @@ class RetrofitNetworkClient(private val context: Context) : NetworkClient {
             }
         }
         return false
+    }
+
+    companion object {
+        const val IMDB_BASE_URL = "https://imdb-api.com"
     }
 }
