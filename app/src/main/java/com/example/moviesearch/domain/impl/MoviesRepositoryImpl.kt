@@ -2,21 +2,23 @@ package com.example.moviesearch.domain.impl
 
 import com.example.moviesearch.data.LocalStorage
 import com.example.moviesearch.data.NetworkClient
+import com.example.moviesearch.data.dto.MovieDetailsRequest
+import com.example.moviesearch.data.dto.MovieDetailsResponse
 import com.example.moviesearch.data.dto.MoviesSearchRequest
 import com.example.moviesearch.data.dto.MoviesSearchResponse
 import com.example.moviesearch.domain.api.MoviesRepository
 import com.example.moviesearch.domain.models.Movie
+import com.example.moviesearch.domain.models.MovieDetails
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import util.Resource
 
-class MoviesRepositoryImpl : MoviesRepository, KoinComponent {
+class MoviesRepositoryImpl(
+    private val networkClient: NetworkClient,
+    private val localStorage: LocalStorage
+) : MoviesRepository, KoinComponent {
 
-    private val networkClient: NetworkClient by inject()
-    private val localStorage: LocalStorage by inject()
-
-    override fun searchMovies(expression: String): Resource<List<Movie>> {
-        val response = networkClient.doRequest(MoviesSearchRequest(expression))
+    override fun searchMovies(searchQuery: String): Resource<List<Movie>> {
+        val response = networkClient.doRequest(MoviesSearchRequest(searchQuery))
         return when (response.resultCode) {
             -1 -> {
                 Resource.Error("Проверьте соединение к интернету")
@@ -33,6 +35,28 @@ class MoviesRepositoryImpl : MoviesRepository, KoinComponent {
                         inFavorite = stored.contains(it.id)
                     )
                 })
+            }
+            else -> {
+                Resource.Error("Ошибка сервера")
+            }
+        }
+    }
+
+    override fun searchDetails(movieId: String): Resource<MovieDetails> {
+        val response = networkClient.doRequest(MovieDetailsRequest(movieId))
+        return when (response.resultCode) {
+            -1 -> {
+                Resource.Error("Проверьте соединение к интернету")
+            }
+            200 -> {
+                with(response as MovieDetailsResponse) {
+                    Resource.Success(
+                        MovieDetails(
+                            id, title, imDbRating, year,
+                            countries, genres, directors, writers, stars, plot
+                        )
+                    )
+                }
             }
             else -> {
                 Resource.Error("Ошибка сервера")

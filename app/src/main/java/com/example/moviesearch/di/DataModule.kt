@@ -1,4 +1,4 @@
-package com.example.moviesearch.data.di
+package com.example.moviesearch.di
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -27,7 +27,7 @@ val dataModule = module {
     }
 
     single {
-        LocalStorage()
+        LocalStorage(get())
     }
 
     single {
@@ -40,6 +40,6 @@ val dataModule = module {
     }
 
     single<NetworkClient> {
-        RetrofitNetworkClient()
+        RetrofitNetworkClient(get())
     }
 }

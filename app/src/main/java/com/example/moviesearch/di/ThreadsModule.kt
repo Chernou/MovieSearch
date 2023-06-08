@@ -1,4 +1,4 @@
-package com.example.moviesearch.data.di
+package com.example.moviesearch.di
 
 import android.os.Handler
 import android.os.Looper

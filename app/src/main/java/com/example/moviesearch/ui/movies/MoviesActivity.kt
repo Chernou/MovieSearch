@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearch.R
 import com.example.moviesearch.domain.MoviesState
 import com.example.moviesearch.domain.models.Movie
-import com.example.moviesearch.presentation.movies.MoviesSearchViewModel
-import com.example.moviesearch.ui.poster.PosterActivity
+import com.example.moviesearch.view_model.movies.MoviesSearchViewModel
+import com.example.moviesearch.ui.details.DetailsActivity
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -32,11 +32,13 @@ class MoviesActivity : AppCompatActivity() {
     private val adapter = MoviesAdapter(object : MoviesAdapter.MovieClickListener {
         override fun onMovieClick(movie: Movie) {
             if (clickDebounce()) {
-                val intent = Intent(this@MoviesActivity, PosterActivity::class.java)
+                val intent = Intent(this@MoviesActivity, DetailsActivity::class.java)
                 intent.putExtra("poster", movie.image)
+                intent.putExtra("id", movie.id)
                 startActivity(intent)
             }
         }
+
         override fun onFavoriteToggleClick(movie: Movie) {
             viewModel.toggleFavorite(movie)
         }

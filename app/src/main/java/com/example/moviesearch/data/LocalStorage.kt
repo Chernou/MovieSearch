@@ -2,11 +2,8 @@ package com.example.moviesearch.data
 
 import android.content.SharedPreferences
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class LocalStorage : KoinComponent{
-
-    private val sharedPreferences: SharedPreferences by inject()
+class LocalStorage(private val sharedPreferences: SharedPreferences) : KoinComponent{
 
     fun addToFavorites(movieId: String) {
         changeFavorites(movieId = movieId, remove = false)

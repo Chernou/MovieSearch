@@ -1,6 +1,6 @@
-package com.example.moviesearch.presentation.movies
+package com.example.moviesearch.view_model.movies
 
-import com.example.moviesearch.presentation.SingleLiveEvent
+import com.example.moviesearch.view_model.SingleLiveEvent
 import android.os.Handler
 import android.os.SystemClock
 import android.util.Log
@@ -8,22 +8,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.moviesearch.R
 import com.example.moviesearch.domain.MoviesState
 import com.example.moviesearch.domain.api.MoviesInteractor
 import com.example.moviesearch.domain.models.Movie
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import util.ResourceProvider
 
-class MoviesSearchViewModel : ViewModel(), KoinComponent {
-
-    private val moviesInteractor: MoviesInteractor by inject()
-    private val handler: Handler by inject()
-    private val resourceProvider: ResourceProvider by inject()
+class MoviesSearchViewModel(
+    private val moviesInteractor: MoviesInteractor,
+    private val handler: Handler,
+    private val resourceProvider: ResourceProvider
+) : ViewModel(), KoinComponent {
 
     private val stateLiveData = MutableLiveData<MoviesState>()
     private val showToast = SingleLiveEvent<String>()
@@ -137,12 +133,6 @@ class MoviesSearchViewModel : ViewModel(), KoinComponent {
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
-
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                MoviesSearchViewModel()
-            }
-        }
     }
 }
 
