@@ -22,7 +22,7 @@ class DetailsActivity : AppCompatActivity() {
         val viewPager = findViewById<ViewPager2>(R.id.details_view_pager)
         tabMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
-                0 -> tab.text = "ПОСТЕР"
+                0 -> tab.text = "ПОСТЕР" //todo move to resources
                 1 -> tab.text = "О ФИЛЬМЕ"
             }
         }
