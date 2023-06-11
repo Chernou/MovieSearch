@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.cast.MovieCastActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/BoldDetailsStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:textSize="30sp" />
+
+        <TextView
+            style="@style/BoldDetailsStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:padding="12dp"
+            android:text="@string/directors"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/directors"
+            style="@style/BoldDetailsStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:background="@color/grey"
+            android:padding="12dp"
+            android:paddingVertical="16dp" />
+
+        <TextView
+            style="@style/BoldDetailsStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:padding="12dp"
+            android:text="@string/screenwriters"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/screenwriters"
+            style="@style/BoldDetailsStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:background="@color/grey"
+            android:padding="12dp"
+            android:paddingVertical="16dp" />
+
+        <TextView
+            style="@style/BoldDetailsStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:padding="12dp"
+            android:text="@string/actors"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/actors"
+            style="@style/BoldDetailsStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:background="@color/grey"
+            android:padding="12dp"
+            android:paddingVertical="16dp" />
+
+    </LinearLayout>
+
+</ScrollView>

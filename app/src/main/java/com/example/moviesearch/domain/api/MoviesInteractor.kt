@@ -1,5 +1,6 @@
 package com.example.moviesearch.domain.api
 
+import com.example.moviesearch.data.dto.MovieCastResponse
 import com.example.moviesearch.domain.models.Movie
 import com.example.moviesearch.domain.models.MovieDetails
 
@@ -8,6 +9,7 @@ interface MoviesInteractor {
     fun addMovieToFavorites(movie: Movie)
     fun removeMovieFromFavorites(movie: Movie)
     fun searchDetails(movieId: String, consumer: DetailsConsumer)
+    fun searchCast(movieId: String, consumer: CastConsumer)
 
     interface MoviesConsumer {
         fun consume(foundMovies: List<Movie>?, errorMessage: String?)
@@ -17,4 +19,7 @@ interface MoviesInteractor {
         fun consume(foundMovieDetails: MovieDetails?, errorMessage: String?)
     }
 
+    interface CastConsumer {
+        fun consume(foundMovieCast: MovieCastResponse?, errorMessage: String?)
+    }
 }

@@ -10,4 +10,8 @@
     <string name="screenwriter">Сценарист:</string>
     <string name="casting">В ролях:</string>
     <string name="plot">Сюжет:</string>
+    <string name="directors">Directors</string>
+    <string name="screenwriters">Screenwriters</string>
+    <string name="actors">Actors</string>
+    <string name="show_cast">Show cast</string>
 </resources>

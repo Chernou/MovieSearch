@@ -1,5 +1,6 @@
 package com.example.moviesearch.ui.details
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import com.example.moviesearch.databinding.FragmentAboutBinding
 import com.example.moviesearch.domain.AboutState
 import com.example.moviesearch.domain.models.MovieDetails
+import com.example.moviesearch.ui.cast.MovieCastActivity
 import com.example.moviesearch.view_model.poster.AboutViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -32,6 +34,12 @@ class AboutFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.observeAboutState().observe(viewLifecycleOwner) {
             renderState(it)
+        }
+
+        binding.showCastButton.setOnClickListener {
+            val intent = Intent(requireActivity(), MovieCastActivity::class.java)
+            intent.putExtra(MOVIE_ID, requireArguments().getString(MOVIE_ID))
+            startActivity(intent)
         }
     }
 

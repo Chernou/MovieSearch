@@ -4,6 +4,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import com.example.moviesearch.data.NetworkClient
+import com.example.moviesearch.data.dto.MovieCastRequest
 import com.example.moviesearch.data.dto.MovieDetailsRequest
 import com.example.moviesearch.data.dto.MoviesSearchRequest
 import com.example.moviesearch.data.dto.Response
@@ -17,23 +18,17 @@ class RetrofitNetworkClient(private val imdbService: ImdbApiService) : NetworkCl
             Log.d("!@#", "Not connected") //todo delete
             return Response().apply { resultCode = -1 }
         }
-        return when (dto) {
-            is MoviesSearchRequest -> {
-                val resp = imdbService.searchMovies(dto.searchQuery).execute()
-                val body = resp.body() ?: Response()
-                Log.d("!@#", resp.code().toString()) //todo delete
-                body.apply { resultCode = resp.code() }
-            }
-            is MovieDetailsRequest -> {
-                val resp = imdbService.getMovieDetails(dto.movieId).execute()
-                val body = resp.body() ?: Response()
-                Log.d("!@#", resp.code().toString()) //todo delete
-                body.apply { resultCode = resp.code() }
-            }
-            else -> {
-                Log.d("!@#", "Successful") //todo delete
-                Response().apply { resultCode = 400 }
-            }
+        if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest) && (dto !is MovieCastRequest)) {
+            return Response().apply { resultCode = 400 }
+        }
+        val response = when (dto) {
+            is MoviesSearchRequest -> imdbService.searchMovies(dto.searchQuery).execute()
+            is MovieDetailsRequest -> imdbService.getMovieDetails(dto.movieId).execute()
+            else -> imdbService.getMovieCast((dto as MovieCastRequest).movieId).execute()
+        }
+        val body = response.body()
+        return body?.apply { resultCode = response.code() } ?: Response().apply {
+            resultCode = response.code()
         }
     }
 

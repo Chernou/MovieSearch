@@ -2,6 +2,8 @@ package com.example.moviesearch.domain.impl
 
 import com.example.moviesearch.data.LocalStorage
 import com.example.moviesearch.data.NetworkClient
+import com.example.moviesearch.data.dto.MovieCastRequest
+import com.example.moviesearch.data.dto.MovieCastResponse
 import com.example.moviesearch.data.dto.MovieDetailsRequest
 import com.example.moviesearch.data.dto.MovieDetailsResponse
 import com.example.moviesearch.data.dto.MoviesSearchRequest
@@ -54,6 +56,36 @@ class MoviesRepositoryImpl(
                         MovieDetails(
                             id, title, imDbRating, year,
                             countries, genres, directors, writers, stars, plot
+                        )
+                    )
+                }
+            }
+            else -> {
+                Resource.Error("Ошибка сервера")
+            }
+        }
+    }
+
+    override fun searchMovieCast(movieId: String): Resource<MovieCastResponse> {
+        val response = networkClient.doRequest(MovieCastRequest(movieId))
+        return when (response.resultCode) {
+            -1 -> {
+                Resource.Error("Проверьте соединение к интернету")
+            }
+            200 -> {
+                with(response as MovieCastResponse) {
+                    Resource.Success(
+                        MovieCastResponse(
+                            actors,
+                            directors,
+                            errorMessage,
+                            fullTitle,
+                            imDbId,
+                            others,
+                            title,
+                            type,
+                            writers,
+                            year
                         )
                     )
                 }
