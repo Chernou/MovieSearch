@@ -1,50 +1,42 @@
 package com.example.moviesearch.data.dto
 
 data class MovieCastResponse(
-    val actors: List<Actor>,
-    val directors: Directors,
+    val actors: List<ActorResponse>,
+    val directors: DirectorsResponse,
     val errorMessage: String,
     val fullTitle: String,
     val imDbId: String,
-    val others: List<Other>,
+    val others: List<OtherResponse>,
     val title: String,
     val type: String,
-    val writers: Writers,
+    val writers: WritersResponse,
     val year: String
 ) : Response()
 
-data class Actor(
+data class ActorResponse(
     val asCharacter: String,
     val id: String,
     val image: String,
     val name: String
-) {
-    override fun toString(): String {
-        return ("$name\nas $asCharacter")
-    }
-}
+)
 
-data class Directors(
-    val items: List<Item>,
+data class DirectorsResponse(
+    val items: List<CastItemResponse>,
     val job: String
 )
 
-data class Other(
-    val items: List<Item>,
+data class OtherResponse(
+    val items: List<CastItemResponse>,
     val job: String
 )
 
-data class Writers(
-    val items: List<Item>,
+data class WritersResponse(
+    val items: List<CastItemResponse>,
     val job: String
 )
 
-data class Item(
+data class CastItemResponse(
     val description: String,
     val id: String,
     val name: String
-) {
-    override fun toString(): String {
-        return ("$name\n$description")
-    }
-}
+)

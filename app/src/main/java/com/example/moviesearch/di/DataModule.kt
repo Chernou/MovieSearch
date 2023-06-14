@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import com.example.moviesearch.data.LocalStorage
 import com.example.moviesearch.data.NetworkClient
+import com.example.moviesearch.data.converters.MovieCastConverter
 import com.example.moviesearch.data.network.ImdbApiService
 import com.example.moviesearch.data.network.RetrofitNetworkClient
 import org.koin.android.ext.koin.androidContext
@@ -41,5 +42,9 @@ val dataModule = module {
 
     single<NetworkClient> {
         RetrofitNetworkClient(get())
+    }
+
+    factory {
+        MovieCastConverter()
     }
 }

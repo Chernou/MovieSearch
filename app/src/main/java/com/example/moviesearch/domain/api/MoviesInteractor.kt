@@ -1,7 +1,7 @@
 package com.example.moviesearch.domain.api
 
-import com.example.moviesearch.data.dto.MovieCastResponse
 import com.example.moviesearch.domain.models.Movie
+import com.example.moviesearch.domain.models.MovieCast
 import com.example.moviesearch.domain.models.MovieDetails
 
 interface MoviesInteractor {
@@ -20,6 +20,6 @@ interface MoviesInteractor {
     }
 
     interface CastConsumer {
-        fun consume(foundMovieCast: MovieCastResponse?, errorMessage: String?)
+        fun consume(foundMovieCast: MovieCast?, errorMessage: String?)
     }
 }

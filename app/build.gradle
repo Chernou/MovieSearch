@@ -53,4 +53,6 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.5.7'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "io.insert-koin:koin-android:3.3.0"
+    implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl:4.3.2'
+    implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.2'
 }

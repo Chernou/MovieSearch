@@ -2,6 +2,7 @@ package com.example.moviesearch.domain.impl
 
 import com.example.moviesearch.data.LocalStorage
 import com.example.moviesearch.data.NetworkClient
+import com.example.moviesearch.data.converters.MovieCastConverter
 import com.example.moviesearch.data.dto.MovieCastRequest
 import com.example.moviesearch.data.dto.MovieCastResponse
 import com.example.moviesearch.data.dto.MovieDetailsRequest
@@ -10,13 +11,15 @@ import com.example.moviesearch.data.dto.MoviesSearchRequest
 import com.example.moviesearch.data.dto.MoviesSearchResponse
 import com.example.moviesearch.domain.api.MoviesRepository
 import com.example.moviesearch.domain.models.Movie
+import com.example.moviesearch.domain.models.MovieCast
 import com.example.moviesearch.domain.models.MovieDetails
 import org.koin.core.component.KoinComponent
 import util.Resource
 
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val localStorage: LocalStorage
+    private val localStorage: LocalStorage,
+    private val castConverter: MovieCastConverter
 ) : MoviesRepository, KoinComponent {
 
     override fun searchMovies(searchQuery: String): Resource<List<Movie>> {
@@ -66,29 +69,16 @@ class MoviesRepositoryImpl(
         }
     }
 
-    override fun searchMovieCast(movieId: String): Resource<MovieCastResponse> {
+    override fun searchMovieCast(movieId: String): Resource<MovieCast> {
         val response = networkClient.doRequest(MovieCastRequest(movieId))
         return when (response.resultCode) {
             -1 -> {
                 Resource.Error("Проверьте соединение к интернету")
             }
             200 -> {
-                with(response as MovieCastResponse) {
-                    Resource.Success(
-                        MovieCastResponse(
-                            actors,
-                            directors,
-                            errorMessage,
-                            fullTitle,
-                            imDbId,
-                            others,
-                            title,
-                            type,
-                            writers,
-                            year
-                        )
-                    )
-                }
+                Resource.Success(
+                    data = castConverter.convert(response as MovieCastResponse)
+                )
             }
             else -> {
                 Resource.Error("Ошибка сервера")
