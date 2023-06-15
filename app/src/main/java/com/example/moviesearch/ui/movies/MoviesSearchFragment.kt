@@ -1,27 +1,29 @@
 package com.example.moviesearch.ui.movies
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearch.R
+import com.example.moviesearch.core.navigation.Router
 import com.example.moviesearch.domain.MoviesState
 import com.example.moviesearch.domain.models.Movie
+import com.example.moviesearch.ui.details.DetailsFragment
 import com.example.moviesearch.view_model.movies.MoviesSearchViewModel
-import com.example.moviesearch.ui.details.DetailsActivity
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
-class MoviesActivity : AppCompatActivity() {
+class MoviesSearchFragment : Fragment() {
 
     private lateinit var queryInput: EditText
     private lateinit var placeholderMessage: TextView
@@ -29,13 +31,17 @@ class MoviesActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var textWatcher: TextWatcher
 
+    private val router: Router by inject()
+
     private val adapter = MoviesAdapter(object : MoviesAdapter.MovieClickListener {
         override fun onMovieClick(movie: Movie) {
             if (clickDebounce()) {
-                val intent = Intent(this@MoviesActivity, DetailsActivity::class.java)
-                intent.putExtra("poster", movie.image)
-                intent.putExtra("id", movie.id)
-                startActivity(intent)
+                router.openFragment(
+                    DetailsFragment.newInstance(
+                        movieId = movie.id,
+                        posterUrl = movie.image
+                    )
+                )
             }
         }
 
@@ -46,11 +52,17 @@ class MoviesActivity : AppCompatActivity() {
 
     private var isClickAllowed = true
     private val handler: Handler by inject()
-    private val viewModel: MoviesSearchViewModel by viewModel()
+    private val viewModel: MoviesSearchViewModel by activityViewModel()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_movies_search, container, false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_movies)
 
         viewModel.observeState().observe(this) {
             render(it)
@@ -59,14 +71,6 @@ class MoviesActivity : AppCompatActivity() {
         viewModel.observeShowToast().observe(this) {
             showToast(it)
         }
-
-        placeholderMessage = findViewById(R.id.placeholderMessage)
-        queryInput = findViewById(R.id.queryInput)
-        moviesList = findViewById(R.id.locations)
-        progressBar = findViewById(R.id.progressBar)
-
-        moviesList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        moviesList.adapter = adapter
 
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -81,11 +85,30 @@ class MoviesActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
             }
         }
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        placeholderMessage = view.findViewById(R.id.placeholderMessage)
+        queryInput = view.findViewById(R.id.queryInput)
+        moviesList = view.findViewById(R.id.locations)
+        progressBar = view.findViewById(R.id.progressBar)
+
+        moviesList.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        moviesList.adapter = adapter
+
         textWatcher.let { queryInput.addTextChangedListener(it) }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        textWatcher.let { queryInput.removeTextChangedListener(it) }
+    }
+
     private fun showToast(additionalMessage: String) {
-        Toast.makeText(this, additionalMessage, Toast.LENGTH_LONG)
+        Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
             .show()
     }
 
@@ -138,6 +161,6 @@ class MoviesActivity : AppCompatActivity() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
+        fun newInstance() = MoviesSearchFragment()
     }
-
-} 
+}

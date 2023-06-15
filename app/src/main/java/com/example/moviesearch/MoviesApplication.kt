@@ -3,6 +3,7 @@ package com.example.moviesearch
 import android.app.Application
 import com.example.moviesearch.di.dataModule
 import com.example.moviesearch.di.interactorModule
+import com.example.moviesearch.di.navigationModule
 import com.example.moviesearch.di.repositoryModule
 import com.example.moviesearch.di.threadsModule
 import com.example.moviesearch.di.viewModelModule
@@ -19,7 +20,8 @@ class MoviesApplication() : Application() {
                 interactorModule,
                 repositoryModule,
                 threadsModule,
-                viewModelModule
+                viewModelModule,
+                navigationModule
             )
         }
     }
