@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.viewpager2.widget.ViewPager2
 import com.example.moviesearch.R
 import com.google.android.material.tabs.TabLayout
@@ -48,13 +49,7 @@ class DetailsFragment : Fragment() {
     companion object {
         private const val MOVIE_POSTER = "MOVIE_POSTER"
         private const val MOVIE_ID = "MOVIE_ID"
-
-        fun newInstance(posterUrl: String, movieId: String) =
-            DetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(MOVIE_POSTER, posterUrl)
-                    putString(MOVIE_ID, movieId)
-                }
-            }
+        fun createArgs(movieId: String, moviePoster: String): Bundle =
+            bundleOf(MOVIE_ID to movieId, MOVIE_POSTER to moviePoster)
     }
 }

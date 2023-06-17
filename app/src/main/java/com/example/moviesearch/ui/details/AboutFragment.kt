@@ -5,13 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.moviesearch.core.navigation.Router
+import androidx.navigation.fragment.findNavController
+import com.example.moviesearch.R
 import com.example.moviesearch.databinding.FragmentAboutBinding
 import com.example.moviesearch.domain.AboutState
 import com.example.moviesearch.domain.models.MovieDetails
 import com.example.moviesearch.ui.cast.MovieCastFragment
 import com.example.moviesearch.view_model.poster.AboutViewModel
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -22,7 +22,6 @@ class AboutFragment : Fragment() {
     private val viewModel: AboutViewModel by activityViewModel {
         parametersOf(requireArguments().getString(MOVIE_ID))
     }
-    private val router : Router by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,10 +38,9 @@ class AboutFragment : Fragment() {
         }
 
         binding.showCastButton.setOnClickListener {
-            router.openFragment(
-                MovieCastFragment.newInstance(
-                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
-                )
+            findNavController().navigate(
+                R.id.action_detailsFragment_to_movieCastFragment,
+                MovieCastFragment.createArgs(requireArguments().getString(MOVIE_ID).orEmpty())
             )
         }
     }

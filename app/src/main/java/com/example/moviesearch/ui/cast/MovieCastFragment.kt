@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearch.R
@@ -67,11 +68,6 @@ class MovieCastFragment : Fragment() {
 
     companion object {
         private const val MOVIE_ID = "MOVIE_ID"
-        fun newInstance(movieId: String) =
-            MovieCastFragment().apply {
-                arguments = Bundle().apply {
-                    putString(MOVIE_ID, movieId)
-                }
-            }
+        fun createArgs(movieId: String): Bundle = bundleOf(MOVIE_ID to movieId)
     }
 }

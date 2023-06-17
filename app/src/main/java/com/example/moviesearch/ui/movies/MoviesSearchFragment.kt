@@ -12,10 +12,10 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearch.R
-import com.example.moviesearch.core.navigation.Router
 import com.example.moviesearch.domain.MoviesState
 import com.example.moviesearch.domain.models.Movie
 import com.example.moviesearch.ui.details.DetailsFragment
@@ -31,16 +31,13 @@ class MoviesSearchFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var textWatcher: TextWatcher
 
-    private val router: Router by inject()
 
     private val adapter = MoviesAdapter(object : MoviesAdapter.MovieClickListener {
         override fun onMovieClick(movie: Movie) {
             if (clickDebounce()) {
-                router.openFragment(
-                    DetailsFragment.newInstance(
-                        movieId = movie.id,
-                        posterUrl = movie.image
-                    )
+                findNavController().navigate(
+                    R.id.action_moviesSearchFragment_to_detailsFragment,
+                    DetailsFragment.createArgs(movie.id, movie.image)
                 )
             }
         }
