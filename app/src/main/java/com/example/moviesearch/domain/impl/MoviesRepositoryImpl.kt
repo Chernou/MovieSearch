@@ -1,5 +1,6 @@
 package com.example.moviesearch.domain.impl
 
+import android.util.Log
 import com.example.moviesearch.data.LocalStorage
 import com.example.moviesearch.data.NetworkClient
 import com.example.moviesearch.data.converters.MovieCastConverter
@@ -9,10 +10,13 @@ import com.example.moviesearch.data.dto.MovieDetailsRequest
 import com.example.moviesearch.data.dto.MovieDetailsResponse
 import com.example.moviesearch.data.dto.MoviesSearchRequest
 import com.example.moviesearch.data.dto.MoviesSearchResponse
+import com.example.moviesearch.data.dto.NamesRequest
+import com.example.moviesearch.data.dto.NamesResponse
 import com.example.moviesearch.domain.api.MoviesRepository
 import com.example.moviesearch.domain.models.Movie
 import com.example.moviesearch.domain.models.MovieCast
 import com.example.moviesearch.domain.models.MovieDetails
+import com.example.moviesearch.domain.models.Name
 import org.koin.core.component.KoinComponent
 import util.Resource
 
@@ -79,6 +83,28 @@ class MoviesRepositoryImpl(
                 Resource.Success(
                     data = castConverter.convert(response as MovieCastResponse)
                 )
+            }
+            else -> {
+                Resource.Error("Ошибка сервера")
+            }
+        }
+    }
+
+    override fun searchNames(searchQuery: String) : Resource<List<Name>> {
+        val response = networkClient.doRequest(NamesRequest(searchQuery))
+        return when (response.resultCode) {
+            -1 -> {
+                Resource.Error("Проверьте соединение к интернету")
+            }
+            200 -> {
+                Log.d("!@#", (response as NamesResponse).results[0].title)
+                Resource.Success((response as NamesResponse).results.map {
+                    Name(
+                        name = it.title,
+                        description = it.description,
+                        imageUrl = it.image
+                    )
+                })
             }
             else -> {
                 Resource.Error("Ошибка сервера")

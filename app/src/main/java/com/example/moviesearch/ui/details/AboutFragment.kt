@@ -19,9 +19,7 @@ class AboutFragment : Fragment() {
 
     private lateinit var binding: FragmentAboutBinding
 
-    private val viewModel: AboutViewModel by activityViewModel {
-        parametersOf(requireArguments().getString(MOVIE_ID))
-    }
+    private val viewModel: AboutViewModel by activityViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,6 +27,11 @@ class AboutFragment : Fragment() {
     ): View {
         binding = FragmentAboutBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.searchAbout(requireArguments().getString(MOVIE_ID) ?: "")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

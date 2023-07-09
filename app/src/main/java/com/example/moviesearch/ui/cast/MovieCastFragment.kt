@@ -18,14 +18,17 @@ import org.koin.core.parameter.parametersOf
 
 class MovieCastFragment : Fragment() {
 
-    private val viewModel: MovieCastViewModel by activityViewModel {
-        parametersOf(requireArguments().getString(MOVIE_ID))
-    }
+    private val viewModel: MovieCastViewModel by activityViewModel()
     private lateinit var titleTextView: TextView
     private val adapter = ListDelegationAdapter(
         movieCastHeaderDelegate(),
         movieCastPersonDelegate(),
     )
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.searchCast(requireArguments().getString(MOVIE_ID) ?: "")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

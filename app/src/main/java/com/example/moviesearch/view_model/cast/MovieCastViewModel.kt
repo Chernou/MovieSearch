@@ -8,13 +8,12 @@ import com.example.moviesearch.domain.api.MoviesInteractor
 import com.example.moviesearch.domain.models.MovieCast
 import com.example.moviesearch.ui.cast.MoviesCastRVItem
 
-class MovieCastViewModel(movieId: String, moviesInteractor: MoviesInteractor) : ViewModel() {
+class MovieCastViewModel(private val moviesInteractor: MoviesInteractor) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<CastState>()
     fun observeCast(): LiveData<CastState> = stateLiveData
 
-    init {
-
+    fun searchCast(movieId: String) {
         moviesInteractor.searchCast(movieId, object : MoviesInteractor.CastConsumer {
             override fun consume(foundMovieCast: MovieCast?, errorMessage: String?) {
                 if (foundMovieCast != null) {
@@ -25,7 +24,6 @@ class MovieCastViewModel(movieId: String, moviesInteractor: MoviesInteractor) : 
             }
         })
     }
-
 
     private fun castToUiStateContent(cast: MovieCast): CastState {
         val items = buildList<MoviesCastRVItem> {
@@ -55,5 +53,4 @@ class MovieCastViewModel(movieId: String, moviesInteractor: MoviesInteractor) : 
             items = items
         )
     }
-
 }

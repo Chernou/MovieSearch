@@ -51,6 +51,19 @@ class MoviesInteractorImpl(
         }
     }
 
+    override fun searchNames(searchQuery: String, consumer: MoviesInteractor.NamesConsumer) {
+        executor.execute {
+            when (val resource = repository.searchNames(searchQuery)) {
+                is Resource.Success -> {
+                    consumer.consume(resource.data, null)
+                }
+                is Resource.Error -> {
+                    consumer.consume(null, resource.message)
+                }
+            }
+        }
+    }
+
     override fun addMovieToFavorites(movie: Movie) {
         repository.addMovieToFavorites(movie)
     }

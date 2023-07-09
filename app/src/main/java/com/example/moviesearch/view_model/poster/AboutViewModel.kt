@@ -8,11 +8,12 @@ import com.example.moviesearch.domain.api.MoviesInteractor
 import com.example.moviesearch.domain.models.MovieDetails
 
 class AboutViewModel(
-    movieId: String,
-    moviesInteractor: MoviesInteractor
+    private val moviesInteractor: MoviesInteractor
 ) : ViewModel() {
 
-    init {
+    private val stateLiveData = MutableLiveData<AboutState>()
+    fun observeAboutState(): LiveData<AboutState> = stateLiveData
+    fun searchAbout(movieId: String) {
         moviesInteractor.searchDetails(movieId, object : MoviesInteractor.DetailsConsumer {
             override fun consume(foundMovieDetails: MovieDetails?, errorMessage: String?) {
                 if (foundMovieDetails != null) {
@@ -24,6 +25,5 @@ class AboutViewModel(
         })
     }
 
-    private val stateLiveData = MutableLiveData<AboutState>()
-    fun observeAboutState(): LiveData<AboutState> = stateLiveData
+
 }

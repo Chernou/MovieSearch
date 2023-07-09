@@ -3,6 +3,7 @@ package com.example.moviesearch.domain.api
 import com.example.moviesearch.domain.models.Movie
 import com.example.moviesearch.domain.models.MovieCast
 import com.example.moviesearch.domain.models.MovieDetails
+import com.example.moviesearch.domain.models.Name
 import util.Resource
 
 interface MoviesRepository {
@@ -11,4 +12,5 @@ interface MoviesRepository {
     fun removeMovieFromFavorites(movie: Movie)
     fun searchDetails(movieId: String): Resource<MovieDetails>
     fun searchMovieCast(movieId: String): Resource<MovieCast>
+    fun searchNames(searchQuery: String): Resource<List<Name>>
 }

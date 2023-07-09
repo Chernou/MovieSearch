@@ -58,8 +58,12 @@ class MoviesSearchFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_movies_search, container, false)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        placeholderMessage = view.findViewById(R.id.placeholderMessage)
+        queryInput = view.findViewById(R.id.queryInput)
+        moviesList = view.findViewById(R.id.locations)
+        progressBar = view.findViewById(R.id.movies_progress_bar)
 
         viewModel.observeState().observe(this) {
             render(it)
@@ -82,15 +86,6 @@ class MoviesSearchFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
             }
         }
-
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        placeholderMessage = view.findViewById(R.id.placeholderMessage)
-        queryInput = view.findViewById(R.id.queryInput)
-        moviesList = view.findViewById(R.id.locations)
-        progressBar = view.findViewById(R.id.progressBar)
 
         moviesList.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -158,6 +153,5 @@ class MoviesSearchFragment : Fragment() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
-        fun newInstance() = MoviesSearchFragment()
     }
 }

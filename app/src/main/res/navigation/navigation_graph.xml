@@ -8,30 +8,42 @@
     <fragment
         android:id="@+id/moviesSearchFragment"
         android:name="com.example.moviesearch.ui.movies.MoviesSearchFragment"
-        android:label="MoviesSearchFragment" >
+        android:label="MoviesSearchFragment"
+        tools:layout="@layout/fragment_movies_search">
         <action
             android:id="@+id/action_moviesSearchFragment_to_detailsFragment"
             app:destination="@id/detailsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/detailsFragment"
         android:name="com.example.moviesearch.ui.details.DetailsFragment"
-        android:label="DetailsFragment" >
+        android:label="DetailsFragment"
+        tools:layout="@layout/fragment_details">
         <action
             android:id="@+id/action_detailsFragment_to_movieCastFragment"
             app:destination="@id/movieCastFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/hold"
             app:popEnterAnim="@anim/hold"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/movieCastFragment"
         android:name="com.example.moviesearch.ui.cast.MovieCastFragment"
         android:label="fragment_movie_cast"
         tools:layout="@layout/fragment_movie_cast" />
+    <fragment
+        android:id="@+id/namesFragment"
+        android:name="com.example.moviesearch.ui.names.NamesFragment"
+        android:label="fragment_names"
+        tools:layout="@layout/fragment_names" />
+    <fragment
+        android:id="@+id/versionFragment"
+        android:name="com.example.moviesearch.ui.version.VersionFragment"
+        android:label="fragment_version"
+        tools:layout="@layout/fragment_version" />
 </navigation>
