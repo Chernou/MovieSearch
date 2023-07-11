@@ -1,28 +1,30 @@
 package com.example.moviesearch.view_model.movies
 
 import com.example.moviesearch.view_model.SingleLiveEvent
-import android.os.Handler
-import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.moviesearch.R
 import com.example.moviesearch.domain.MoviesState
 import com.example.moviesearch.domain.api.MoviesInteractor
 import com.example.moviesearch.domain.models.Movie
 import org.koin.core.component.KoinComponent
 import util.ResourceProvider
+import util.debounce
 
 class MoviesSearchViewModel(
     private val moviesInteractor: MoviesInteractor,
-    private val handler: Handler,
     private val resourceProvider: ResourceProvider
 ) : ViewModel(), KoinComponent {
 
     private val stateLiveData = MutableLiveData<MoviesState>()
     private val showToast = SingleLiveEvent<String>()
+    private val onSearchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) {searchText ->
+        searchRequest(searchText)
+    }
 
     private val mediatorStateLiveData = MediatorLiveData<MoviesState>().also { liveData ->
         liveData.addSource(stateLiveData) { movieState ->
@@ -37,10 +39,6 @@ class MoviesSearchViewModel(
 
     private var latestSearchText: String? = null
 
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
-
     fun observeShowToast(): LiveData<String> = showToast
 
     fun observeState(): LiveData<MoviesState> = mediatorStateLiveData
@@ -50,14 +48,7 @@ class MoviesSearchViewModel(
             return
         }
         this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-        val searchRunnable = Runnable { searchRequest(changedText) }
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+        onSearchDebounce(changedText)
     }
 
     fun toggleFavorite(movie: Movie) {
@@ -132,7 +123,6 @@ class MoviesSearchViewModel(
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
 }
 

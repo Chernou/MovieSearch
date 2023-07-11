@@ -1,7 +1,6 @@
 package com.example.moviesearch.ui.movies
 
 import android.os.Bundle
-import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
@@ -12,16 +11,18 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearch.R
 import com.example.moviesearch.domain.MoviesState
 import com.example.moviesearch.domain.models.Movie
+import com.example.moviesearch.ui.RootActivity
 import com.example.moviesearch.ui.details.DetailsFragment
 import com.example.moviesearch.view_model.movies.MoviesSearchViewModel
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import util.debounce
 
 class MoviesSearchFragment : Fragment() {
 
@@ -30,25 +31,12 @@ class MoviesSearchFragment : Fragment() {
     private lateinit var moviesList: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var textWatcher: TextWatcher
+    private lateinit var onMovieClickDebounce: (Movie) -> Unit
 
 
-    private val adapter = MoviesAdapter(object : MoviesAdapter.MovieClickListener {
-        override fun onMovieClick(movie: Movie) {
-            if (clickDebounce()) {
-                findNavController().navigate(
-                    R.id.action_moviesSearchFragment_to_detailsFragment,
-                    DetailsFragment.createArgs(movie.id, movie.image)
-                )
-            }
-        }
-
-        override fun onFavoriteToggleClick(movie: Movie) {
-            viewModel.toggleFavorite(movie)
-        }
-    })
+    private var adapter: MoviesAdapter? = null
 
     private var isClickAllowed = true
-    private val handler: Handler by inject()
     private val viewModel: MoviesSearchViewModel by activityViewModel()
 
     override fun onCreateView(
@@ -65,11 +53,27 @@ class MoviesSearchFragment : Fragment() {
         moviesList = view.findViewById(R.id.locations)
         progressBar = view.findViewById(R.id.movies_progress_bar)
 
-        viewModel.observeState().observe(this) {
+        onMovieClickDebounce = debounce<Movie>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { movie ->
+            findNavController().navigate(R.id.action_moviesSearchFragment_to_detailsFragment,
+                DetailsFragment.createArgs(movie.id, movie.image))
+        }
+
+        adapter = MoviesAdapter(object : MoviesAdapter.MovieClickListener {
+            override fun onMovieClick(movie: Movie) {
+                (activity as RootActivity).animateBottomNavigationView()
+                onMovieClickDebounce(movie)
+            }
+
+            override fun onFavoriteToggleClick(movie: Movie) {
+                viewModel.toggleFavorite(movie)
+            }
+        })
+
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
 
-        viewModel.observeShowToast().observe(this) {
+        viewModel.observeShowToast().observe(viewLifecycleOwner) {
             showToast(it)
         }
 
@@ -96,6 +100,8 @@ class MoviesSearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        adapter = null
+        moviesList.adapter = null
         textWatcher.let { queryInput.removeTextChangedListener(it) }
     }
 
@@ -130,9 +136,9 @@ class MoviesSearchFragment : Fragment() {
         moviesList.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
         placeholderMessage.visibility = View.GONE
-        adapter.movies.clear()
-        adapter.movies.addAll(movies)
-        adapter.notifyDataSetChanged()
+        adapter?.movies?.clear()
+        adapter?.movies?.addAll(movies)
+        adapter?.notifyDataSetChanged()
     }
 
     private fun showEmpty(emptyMessage: String) {
@@ -140,15 +146,6 @@ class MoviesSearchFragment : Fragment() {
         progressBar.visibility = View.GONE
         placeholderMessage.visibility = View.VISIBLE
         placeholderMessage.text = emptyMessage
-    }
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
     }
 
     companion object {

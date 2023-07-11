@@ -1,6 +1,5 @@
 package com.example.moviesearch.domain.impl
 
-import android.util.Log
 import com.example.moviesearch.data.LocalStorage
 import com.example.moviesearch.data.NetworkClient
 import com.example.moviesearch.data.converters.MovieCastConverter
@@ -97,7 +96,6 @@ class MoviesRepositoryImpl(
                 Resource.Error("Проверьте соединение к интернету")
             }
             200 -> {
-                Log.d("!@#", (response as NamesResponse).results[0].title)
                 Resource.Success((response as NamesResponse).results.map {
                     Name(
                         name = it.title,

@@ -15,7 +15,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        MoviesSearchViewModel(get(), get(), get())
+        MoviesSearchViewModel(get(), get())
     }
 
     viewModel {
@@ -27,6 +27,6 @@ val viewModelModule = module {
     }
 
     viewModel {
-        NamesViewModel(get(), get())
+        NamesViewModel(get())
     }
 }
